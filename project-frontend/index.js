@@ -182,6 +182,7 @@ genreButton.addEventListener("click",(e)=> {
         genreContainer.append(genreList)
         genresObject.data.forEach(genre=>{
             let genreLi = document.createElement("li")
+            genreLi.className = 'genre'
             genreLi.name = genre.attributes.name
             genreLi.innerText = genre.attributes.name
             genreLi.addEventListener("click", (e)=>{
@@ -240,8 +241,6 @@ function showBookDetails(book){
             numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs +=1} times `
         })
     })
-    // numberOfReadings.append(readingButton)
-
 
     let elementsArray = renderBookElements(book)
     
