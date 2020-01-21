@@ -1,17 +1,16 @@
 let bookContainer = document.querySelector(".book-container")
 let showBookDiv = document.querySelector(".show-book")
 let formContainer = document.querySelector('.form-container')
+let genreFormContainer = document.querySelector('.genre-form-container')
+let genreContainer = document.querySelector('.genre-container')
 let featuredBooks = document.querySelector('.featured-books')
 featuredBooks.style.border = 'solid black'
 showBookDiv.style.border = 'solid black'
 
-// featuredBooks.style.display= 'inline-block'
-// featuredBooks.style.float ='left'
 let bookIndexUrl = "http://localhost:3000/books"
 let genreIndexUrl = "http://localhost:3000/genres"
 let reviewIndexUrl = "http://localhost:3000/reviews"
 
-showAllBooks()
 renderFeaturedBooks()
 function fetchAllBooks(){
     return fetch(`${bookIndexUrl}`)
@@ -148,6 +147,32 @@ input.placeholder = "Enter a book title..."
 let searchButton = document.createElement("button")
 searchButton.innerText = "Submit"
 
+// Genre Search Bar
+let genreButton = document.createElement("button")
+genreButton.innerText = "Search By Genre"
+genreButton.addEventListener("click",(e)=> {
+    genreContainer.innerHTML = ''
+    fetchAllGenres().then(genresObject => {
+        let genreList = document.createElement("ul")
+        genreContainer.append(genreList)
+        genresObject.data.forEach(genre=>{
+            let genreLi = document.createElement("li")
+            genreLi.name = genre.attributes.name
+            genreLi.innerText = genre.attributes.name
+            genreLi.addEventListener("click", (e)=>{
+                bookContainer.innerHTML = ''
+                fetchAllBooks().then(booksObject=>{
+                    let bookArr = booksObject.data.filter(book => book.attributes.genre.name === e.target.name)
+                    bookArr.forEach(book=>renderAFilteredBook(book))
+                })
+            })
+            genreList.append(genreLi)
+        })
+    })
+})
+genreFormContainer.prepend(genreButton)
+
+
 searchBar.append(input, searchButton)
 searchBar.addEventListener("submit", (e) => {
     e.preventDefault()
@@ -155,7 +180,6 @@ searchBar.addEventListener("submit", (e) => {
     fetchAllBooks()
         .then(books => {
             let bookMatches = books.data.filter(book => book.attributes.title.includes(capitalize(e.target['book-title'].value.toLowerCase())))
-            console.log(bookMatches)
             if(bookMatches[0]){
                 bookContainer.innerHTML = '';
                 bookMatches.forEach(book => renderAFilteredBook(book))
