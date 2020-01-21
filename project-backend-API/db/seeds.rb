@@ -13,8 +13,8 @@ Genre.destroy_all
 genre1 = Genre.create(name: 'biography')
 genre2 = Genre.create(name: 'horrow')
 
-book1 = Book.create(title: 'Shoe Dog', author: 'Phil Knight', genre: genre1, image: 'https://api.time.com/wp-content/uploads/2015/06/521811839-copy.jpg?w=412&quality=85', abstract: 'This is a boko constaining info', fiction: false )
-book2 = Book.create(title: 'Something', author: 'tag', genre: genre2, image: 'https://api.time.com/wp-content/uploads/2015/06/521811839-copy.jpg?w=412&quality=85', abstract: 'This is a boko constaining info', fiction: false)
+book1 = Book.create(title: 'Shoe Dog', author: 'Phil Knight', genre: genre1, image: 'https://api.time.com/wp-content/uploads/2015/06/521811839-copy.jpg?w=412&quality=85', abstract: 'This is a boko constaining info', fiction: false, read_throughs: 5 )
+book2 = Book.create(title: 'Something', author: 'tag', genre: genre2, image: 'https://api.time.com/wp-content/uploads/2015/06/521811839-copy.jpg?w=412&quality=85', abstract: 'This is a boko constaining info', fiction: false, read_throughs: 100)
 
 review1 = Review.create(stars: 5, content: 'A great book about life, business, and sports', book: book1)
 review2 = Review.create(stars: 3, content: 'not interesting', book: book1)

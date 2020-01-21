@@ -5,13 +5,14 @@ let genreFormContainer = document.querySelector('.genre-form-container')
 let genreContainer = document.querySelector('.genre-container')
 let featuredBooks = document.querySelector('.featured-books')
 featuredBooks.style.border = 'solid black'
-showBookDiv.style.border = 'solid black'
+// showBookDiv.style.border = 'solid black'
 
 let bookIndexUrl = "http://localhost:3000/books"
 let genreIndexUrl = "http://localhost:3000/genres"
 let reviewIndexUrl = "http://localhost:3000/reviews"
 
 renderFeaturedBooks()
+// Fetches
 function fetchAllBooks(){
     return fetch(`${bookIndexUrl}`)
         .then(r => r.json())
@@ -67,22 +68,22 @@ function fetchCreateReview(review, book){
         .then(r=>r.json())
 }
 
-function showAllBooks(){
-    fetchAllBooks().then(books => {
-        books.data.forEach(book => {
-            renderABook(book)
+function fetchUpdateReadThroughs(book){
+    let updatedReadThrough = book.attributes.read_throughs +1
+    const configObj = {
+        method: 'PATCH',
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+        },
+        body: JSON.stringify({
+            read_throughs: updatedReadThrough
         })
-    })
+    }
+    return fetch(`${bookIndexUrl}/${book.id}`, configObj)
+        .then(r => r.json())
 }
-
-function renderABook(book){
-    let bookLi = document.createElement("li")
-    bookLi.innerText = book.attributes.title
-    bookContainer.append(bookLi)
-    bookLi.addEventListener("click", (e) => {
-        showBookDetails(book)
-    })
-}
+// End Fetches
 
 function renderErrorMessage(){
     bookContainer.innerHTML = '';
@@ -96,7 +97,7 @@ function renderErrorMessage(){
     bookContainer.append(bookLi, bookButton)
 
 }
-
+//Renders form to create a new book
 function createBook(){
     showBookDiv.innerHTML = ''
     bookContainer.innerHTML = `
@@ -129,10 +130,11 @@ function createBook(){
     
 }
 
+// Renders books in list after search
 function renderAFilteredBook(book){
    
     let bookLi = document.createElement("li")
-    bookLi.innerText = book.attributes.title
+    bookLi.innerText = ` Title: ${book.attributes.title} - Author: ${book.attributes.author}`
     bookContainer.append(bookLi)
     bookLi.addEventListener("click", (e) => {
         showBookDetails(book)
@@ -143,15 +145,38 @@ function renderAFilteredBook(book){
 let searchBar = document.createElement("form")
 let input = document.createElement("input")
 input.name = "book-title"
-input.placeholder = "Enter a book title..."
+input.placeholder = "Enter a book title or author..."
+input.style.width = '250px'
 let searchButton = document.createElement("button")
 searchButton.innerText = "Submit"
 
-// Genre Search Bar
+searchBar.append(input, searchButton)
+searchBar.addEventListener("submit", (e) => {
+    e.preventDefault()
+    showBookDiv.innerHTML = '';
+    genreContainer.innerHTML = ''
+    fetchAllBooks()
+        .then(books => {
+            let bookMatches = books.data.filter(book => book.attributes.title.includes(capitalize(e.target['book-title'].value.toLowerCase())) || book.attributes.author.includes(capitalize(e.target['book-title'].value.toLowerCase())))
+            if(bookMatches[0]){
+                bookContainer.innerHTML = '<h3>Search Results</h3>'
+                bookMatches.forEach(book =>{ 
+                    renderAFilteredBook(book)
+                })
+            } else {
+                renderErrorMessage()
+            }
+        })
+})
+formContainer.append(searchBar)
+
+// Genre Search Button
 let genreButton = document.createElement("button")
 genreButton.innerText = "Search By Genre"
 genreButton.addEventListener("click",(e)=> {
-    genreContainer.innerHTML = ''
+    genreContainer.innerHTML = '<h3>Click a Genre to Filter By</h3>'
+    bookContainer.innerHTML = ''
+    //Get all Genres, render them, then add event listeners to each
     fetchAllGenres().then(genresObject => {
         let genreList = document.createElement("ul")
         genreContainer.append(genreList)
@@ -160,7 +185,8 @@ genreButton.addEventListener("click",(e)=> {
             genreLi.name = genre.attributes.name
             genreLi.innerText = genre.attributes.name
             genreLi.addEventListener("click", (e)=>{
-                bookContainer.innerHTML = ''
+                //When clicked, we fetch all books and then render them by the genre clicked
+                bookContainer.innerHTML = '<h3>Search Results</h3>'
                 fetchAllBooks().then(booksObject=>{
                     let bookArr = booksObject.data.filter(book => book.attributes.genre.name === e.target.name)
                     bookArr.forEach(book=>renderAFilteredBook(book))
@@ -168,30 +194,18 @@ genreButton.addEventListener("click",(e)=> {
             })
             genreList.append(genreLi)
         })
+        let closeButton = document.createElement('button')
+        closeButton.innerText = 'Exit'
+        closeButton.addEventListener('click', e => {
+            genreContainer.innerHTML = ''
+            bookContainer.innerHTML= ''
+        })
+        genreContainer.append(closeButton)
     })
 })
 genreFormContainer.prepend(genreButton)
 
-
-searchBar.append(input, searchButton)
-searchBar.addEventListener("submit", (e) => {
-    e.preventDefault()
-    showBookDiv.innerHTML = '';
-    fetchAllBooks()
-        .then(books => {
-            let bookMatches = books.data.filter(book => book.attributes.title.includes(capitalize(e.target['book-title'].value.toLowerCase())))
-            if(bookMatches[0]){
-                bookContainer.innerHTML = '';
-                bookMatches.forEach(book => renderAFilteredBook(book))
-            } else {
-                renderErrorMessage()
-            }
-        })
-})
-
-
-formContainer.append(searchBar)
-
+// creates book elements that will display full book details
 function renderBookElements(book){
     let title = document.createElement("p")
     title.innerText = `Title: ${book.attributes.title}`
@@ -211,10 +225,24 @@ function renderBookElements(book){
     let elementsArray = [title, author, image, abstract, fiction]
     return elementsArray
 }
+
+// Renders the created book elements from renderBookElements with a reviews form + reviews
 function showBookDetails(book){
     featuredBooks.innerHTML = ''
     showBookDiv.innerHTML = ''
     
+    let numberOfReadings = document.createElement("h4")
+    numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs} times `
+    let readingButton = document.createElement("button")
+    readingButton.innerText = 'I read this book!'
+    readingButton.addEventListener("click",(e)=>{
+        fetchUpdateReadThroughs(book).then(json =>{
+            numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs +=1} times `
+        })
+    })
+    // numberOfReadings.append(readingButton)
+
+
     let elementsArray = renderBookElements(book)
     
     let reviewForm = document.createElement("form")
@@ -236,9 +264,10 @@ function showBookDetails(book){
     book.attributes.reviews.forEach(review=>{
         showReviews(review, reviewDiv)
     })
-    showBookDiv.append(elementsArray[0], elementsArray[1], elementsArray[2], elementsArray[3], elementsArray[4], reviewForm, reviewDiv)
+    showBookDiv.append(elementsArray[0], elementsArray[1], elementsArray[2], elementsArray[3], elementsArray[4], numberOfReadings, readingButton, reviewForm, reviewDiv)
 }
 
+//Displays Reviews for an individual book
 function showReviews(review, reviewDiv){
     let starsP = document.createElement("p")
     starsP.innerText = `Star Rating: ${review.stars}`
@@ -247,6 +276,7 @@ function showReviews(review, reviewDiv){
     reviewDiv.append(starsP, contentP)
 }
 
+//Displays books that have the highest ratings in our db
 function renderFeaturedBooks(){
     fetchAllBooks().then(json => {
         let reviewsArray = []
@@ -281,7 +311,7 @@ function renderFeaturedBooks(){
     })
 }
 
-
+// Algorithm to capitalize the first letter of strings
 function capitalize(string){
     const words = []
     for(let word of string.split(' ')){

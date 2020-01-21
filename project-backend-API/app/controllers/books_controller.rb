@@ -15,9 +15,19 @@ class BooksController < ApplicationController
         render json: BookSerializer.new(book)
     end
 
+    def update
+        book = Book.find_by(id: params[:id])
+        book.update(read_through_params)
+        render json: BookSerializer.new(book)
+    end
+
     private 
     def create_book_params 
-        params.require(:book).permit(:title, :author, :image, :genre_id, :abstract, :fiction)
+        params.require(:book).permit(:title, :author, :image, :genre_id, :abstract, :fiction, :read_throughs)
+    end
+
+    def read_through_params
+        params.require(:book).permit(:read_throughs)
     end
     
 end
