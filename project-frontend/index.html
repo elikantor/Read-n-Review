@@ -2,37 +2,43 @@
 <html>
     <head>
         <script defer src= 'index.js'></script>
-        
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+        <link rel="stylesheet" type="text/css" href = 'index.css' />
+        <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/> -->
     </head>
     <body>
         <nav >
-            <img src = "images/logo.jpeg" style = 'width: 250px'>
+            <img id = 'logo' src = "images/logo.jpeg">
         </nav>
-        
-        <div class= 'banner-img' style = 'text-align: center;'>
-            <img src=" images/Library.jpeg" style= 'width: 70%; height: 100px; text-align: center;'>
-        </div>
-        <div class = 'form-container' style= 'text-align: center;'>
-        </div>
 
-        <div class = 'genre-form-container' style= 'text-align: center'>
-            <div class='genre-container'>
-                
-
+        <div class= "hero-image" >
+            <img src=" images/skinnybooks.jpeg">
+            <div id = 'forms'>
+                <h2> Search For a Book!</h2>
+                <div class = 'form-container' >
+                </div>
+                <div class = 'genre-form-container' style= 'text-align: center; list-style: none;'>
+                </div>
             </div>
         </div>
 
-        <ul class='book-container'>
-        </ul>
-        <div class = 'featured-books'>
-            <h1>Featured Books</h1>
-            
-        </div>
-        <div class="show-book">
-
+        <div class='genre-container'>
         </div>
 
+        <div id='book-container'>
+            <ul class='book-container'>
+            </ul>
+        </div>
+
+        <hr>
+        <div id = 'featured'>
+            <div class = 'featured-books'>
+                
+            </div>
+        </div>
+        <div class = 'show-book-container'>
+            <div id = 'book' class="show-book">
+            </div>
+        </div>
       
 
     </body>
