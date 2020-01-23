@@ -4,7 +4,13 @@ let formContainer = document.querySelector('.form-container')
 let genreFormContainer = document.querySelector('.genre-form-container')
 let genreContainer = document.querySelector('.genre-container')
 let featuredBooks = document.querySelector('.featured-books')
-featuredBooks.style.border = 'solid black'
+let logo = document.querySelector('#logo')
+let hardRule = document.createElement('hr')
+logo.addEventListener('click', ()=>{
+    featuredBooks.innerHTML = ''
+    renderFeaturedBooks()
+})
+// featuredBooks.style.border = 'solid black'
 // showBookDiv.style.border = 'solid black'
 
 let bookIndexUrl = "http://localhost:3000/books"
@@ -30,8 +36,8 @@ function fetchFeaturedBooks(averageReviewObj){
 
 function fetchCreateBook(bookDetails){
     const newBook = {
-        title: bookDetails['book-title'].value,
-        author: bookDetails['book-author'].value,
+        title: capitalize(bookDetails['book-title'].value.toLowerCase()),
+        author: capitalize(bookDetails['book-author'].value.toLowerCase()),
         image: bookDetails['book-image'].value,
         genre_id: parseInt(bookDetails['book-genre'].value),
         abstract: bookDetails['book-abstract'].value,
@@ -47,7 +53,6 @@ function fetchCreateBook(bookDetails){
     }
     return fetch(`${bookIndexUrl}`, configObj)
         .then(r => r.json())
-      
 }
 
 function fetchCreateReview(review, book){
@@ -87,14 +92,14 @@ function fetchUpdateReadThroughs(book){
 
 function renderErrorMessage(){
     bookContainer.innerHTML = '';
-    let bookLi = document.createElement("li")
-    bookLi.innerText = 'No book found - try your search again! Or create a new book!'
+    let bookHeader = document.createElement("h3")
+    bookHeader.innerText = 'No books found - Please search again or create a new book!'
     let bookButton = document.createElement("button")
     bookButton.innerText = "Create Book"
     bookButton.addEventListener("click", (e) => {
         createBook()
     })
-    bookContainer.append(bookLi, bookButton)
+    bookContainer.append(bookHeader, bookButton)
 
 }
 //Renders form to create a new book
@@ -102,15 +107,22 @@ function createBook(){
     showBookDiv.innerHTML = ''
     bookContainer.innerHTML = `
         <form>
-            Book Title: <input name="book-title" placeholder="Enter a book title..."><br>
-            Author: <input name="book-author" placeholder="Enter a book author..."><br>
-            Image Url: <input name="book-image" placeholder="Enter a book image_url..."><br>
+            Book Title: <input name="book-title" required placeholder="Enter a book title..."><br>
+            Author: <input name="book-author" required placeholder="Enter a book author..."><br>
+            Image Url: <input name="book-image" required placeholder="Enter a book image_url..."><br>
             Genre: <select name="book-genre" placeholder="Enter a book genre..."></select><br>
-            Book Abstract: <textarea name="book-abstract" placeholder="Enter a book abstract..."></textarea><br>
+            Book Abstract: <textarea name="book-abstract" required placeholder="Enter a book abstract..."></textarea><br>
             Fiction?: <input type="checkbox" name="fiction" ><br>
             Create Book: <button>Submit</button>
         </form>
     `
+    let closeButton = document.createElement('button')
+    closeButton.innerText = 'I changed my mind!'
+    closeButton.addEventListener('click', e => {
+        genreContainer.innerHTML = ''
+        bookContainer.innerHTML= ''
+    })
+    bookContainer.append(closeButton)
     const newBookForm = bookContainer.querySelector('form')
     const genreSelect = newBookForm.querySelector('select')
         fetchAllGenres().then(json => {
@@ -132,9 +144,8 @@ function createBook(){
 
 // Renders books in list after search
 function renderAFilteredBook(book){
-   
     let bookLi = document.createElement("li")
-    bookLi.innerText = ` Title: ${book.attributes.title} - Author: ${book.attributes.author}`
+    bookLi.innerHTML = ` <strong><em>Title:</em></strong> ${book.attributes.title} - <em>Author:</em> ${book.attributes.author}`
     bookContainer.append(bookLi)
     bookLi.addEventListener("click", (e) => {
         showBookDetails(book)
@@ -146,7 +157,7 @@ let searchBar = document.createElement("form")
 let input = document.createElement("input")
 input.name = "book-title"
 input.placeholder = "Enter a book title or author..."
-input.style.width = '250px'
+input.style.width = '20vw'
 let searchButton = document.createElement("button")
 searchButton.innerText = "Submit"
 
@@ -190,38 +201,46 @@ genreButton.addEventListener("click",(e)=> {
                 bookContainer.innerHTML = '<h3>Search Results</h3>'
                 fetchAllBooks().then(booksObject=>{
                     let bookArr = booksObject.data.filter(book => book.attributes.genre.name === e.target.name)
-                    bookArr.forEach(book=>renderAFilteredBook(book))
+                    if(bookArr.length > 0){
+                        bookArr.forEach(book=>renderAFilteredBook(book))
+                    } else {
+                        renderErrorMessage()
+                    }
                 })
             })
             genreList.append(genreLi)
         })
+
         let closeButton = document.createElement('button')
-        closeButton.innerText = 'Exit'
+        closeButton.innerText = 'Exit Genre Search'
         closeButton.addEventListener('click', e => {
             genreContainer.innerHTML = ''
             bookContainer.innerHTML= ''
         })
-        genreContainer.append(closeButton)
+        genreContainer.append(closeButton, hardRule)
     })
 })
 genreFormContainer.prepend(genreButton)
 
 // creates book elements that will display full book details
 function renderBookElements(book){
-    let title = document.createElement("p")
-    title.innerText = `Title: ${book.attributes.title}`
+    let title = document.createElement("h2")
+    title.innerText = `${book.attributes.title}`
 
-    let author = document.createElement("p")
+    let author = document.createElement("h4")
     author.innerText = `Author: ${book.attributes.author}`
 
     let image = document.createElement("img")
     image.src = book.attributes.image
+    image.className = 'book-image'
+    image.style.width ='250px'
+    image.style.height ='340px'
 
     let abstract = document.createElement("p")
-    abstract.innerText = `Abstract: ${book.attributes.abstract}`
+    abstract.innerText = `${book.attributes.abstract}`
 
     let fiction = document.createElement("p")
-    fiction.innerText = (book.attributes.fiction ? 'Fiction':'Non-Fiction')
+    fiction.innerText = `${(book.attributes.fiction ? 'Fiction':'Non-Fiction')} - ${book.attributes.genre.name}`
      
     let elementsArray = [title, author, image, abstract, fiction]
     return elementsArray
@@ -231,9 +250,11 @@ function renderBookElements(book){
 function showBookDetails(book){
     featuredBooks.innerHTML = ''
     showBookDiv.innerHTML = ''
-    
+    showBookDiv.classList.add( 'ui', 'card')
+    showBookDiv.style.textAlign = 'center'
     let numberOfReadings = document.createElement("h4")
-    numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs} times `
+
+    numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs} times!`
     let readingButton = document.createElement("button")
     readingButton.innerText = 'I read this book!'
     readingButton.addEventListener("click",(e)=>{
@@ -243,40 +264,62 @@ function showBookDetails(book){
     })
 
     let elementsArray = renderBookElements(book)
-    
+    let bookImage = elementsArray[2]
+
+    // Below creates review forms for each individual book
+    let reviewHeader = document.createElement('h3')
+    reviewHeader.innerText = 'Leave a Review!'
+    reviewHeader.style.textAlign = 'left'
     let reviewForm = document.createElement("form")
-    reviewForm.innerHTML = `
-        <select name="stars"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select> 
+    reviewForm.innerHTML = `Star Rating:
+        <select name="stars"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select> <br> <br>
         <textarea name="content" placeholder="Enter a review..."></textarea>
-        <input type="submit"></input>
+        <input type="submit"></input> <br>
+        <h3>Previous Reviews</h3>
     `
+    reviewForm.style.textAlign = 'left'
     let reviewDiv = document.createElement("div")
-    
+    reviewDiv.className = 'review-div'
     reviewForm.addEventListener("submit", (e)=> {
         e.preventDefault()
         fetchCreateReview(e.target, book).then(json => {
             book.attributes.reviews.push(json.data.attributes)
             showReviews(json.data.attributes, reviewDiv)
-
+            
         })
     })
-    book.attributes.reviews.forEach(review=>{
-        showReviews(review, reviewDiv)
-    })
-    showBookDiv.append(elementsArray[0], elementsArray[1], elementsArray[2], elementsArray[3], elementsArray[4], numberOfReadings, readingButton, reviewForm, reviewDiv)
+    if(book.attributes.reviews.length){
+        book.attributes.reviews.forEach(review=>{
+            showReviews(review, reviewDiv)
+        })
+    } else {
+        reviewDiv.style.textAlign = 'center'
+        reviewDiv.innerHTML = "<h3>Be the first to review this book!</h3>"
+    }
+    showBookDiv.append(elementsArray[0], elementsArray[1], elementsArray[2], elementsArray[3], elementsArray[4], numberOfReadings, readingButton, reviewHeader, reviewForm, reviewDiv)
 }
 
 //Displays Reviews for an individual book
 function showReviews(review, reviewDiv){
+    if(reviewDiv.querySelector('h3')){
+        let firstReviewHeader = reviewDiv.querySelector('h3')
+        firstReviewHeader.remove()
+        reviewDiv.style.textAlign = 'left'
+    }
+    let hardRule = document.createElement('hr')
+    let star = `\u{2B50}`;
     let starsP = document.createElement("p")
-    starsP.innerText = `Star Rating: ${review.stars}`
+    starsP.innerText = `Star Rating: ${star.repeat(review.stars)}`
     let contentP = document.createElement("p")
     contentP.innerText = `Review: ${review.content}`
-    reviewDiv.append(starsP, contentP)
+    reviewDiv.append(starsP, contentP,hardRule)
 }
 
 //Displays books that have the highest ratings in our db
 function renderFeaturedBooks(){
+    genreContainer.innerHTML = ''
+    showBookDiv.innerHTML =  ''
+    bookContainer.innerHTML =''
     fetchAllBooks().then(json => {
         let reviewsArray = []
         console.log(json.data)
@@ -291,6 +334,7 @@ function renderFeaturedBooks(){
         let filteredReviews = reviewsArray.filter(review => review.averageReview >= 1 )
         let sortedReviews = filteredReviews.sort((review1, review2) => (review1.averageReview < review2.averageReview)? 1:-1)
         let topThreeBooks = sortedReviews.slice(0,3)
+        featuredBooks.innerHTML = '<h1>Featured Books</h1>'
         topThreeBooks.forEach(averageReviewObj => {
             fetchFeaturedBooks(averageReviewObj).then(json =>{
             let elementsArray = renderBookElements(json.data)
@@ -300,10 +344,10 @@ function renderFeaturedBooks(){
             bookDiv.style.display = 'inline-block'
             let bookImg = elementsArray[2]
             bookImg.style.width= '200px'
-            let hardRule = document.createElement('hr')
             let averageReviewP = document.createElement("p")
-            averageReviewP.innerText = `Average Rating: ${averageReviewObj.averageReview}`
-            bookDiv.append(elementsArray[0],elementsArray[1],bookImg,averageReviewP, hardRule)
+            let star = `\u{2B50}`; 
+            averageReviewP.innerHTML = `<strong>Average Rating:</strong> ${star.repeat(averageReviewObj.averageReview)}`
+            bookDiv.append(elementsArray[0],elementsArray[1],bookImg,averageReviewP)
             featuredBooks.append(bookDiv)
             })
         })
