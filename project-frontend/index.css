@@ -80,3 +80,19 @@ li{
     text-align: left;
     border: solid rgba(119, 93, 93, 0.76)
 }
+
+.featured-image{
+    padding: 50px;
+    transition: transform .2s; /* Animation */
+    margin: 0 auto;
+}
+
+.featured-image:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.featured-book-title:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
