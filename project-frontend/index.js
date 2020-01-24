@@ -10,8 +10,6 @@ logo.addEventListener('click', ()=>{
     featuredBooks.innerHTML = ''
     renderFeaturedBooks()
 })
-// featuredBooks.style.border = 'solid black'
-// showBookDiv.style.border = 'solid black'
 
 let bookIndexUrl = "http://localhost:3000/books"
 let genreIndexUrl = "http://localhost:3000/genres"
@@ -74,7 +72,7 @@ function fetchCreateReview(review, book){
 }
 
 function fetchUpdateReadThroughs(book){
-    let updatedReadThrough = book.attributes.read_throughs +1
+    book.attributes.read_throughs++
     const configObj = {
         method: 'PATCH',
         headers: {
@@ -82,7 +80,7 @@ function fetchUpdateReadThroughs(book){
             'accept': 'application/json'
         },
         body: JSON.stringify({
-            read_throughs: updatedReadThrough
+            read_throughs: book.attributes.read_throughs
         })
     }
     return fetch(`${bookIndexUrl}/${book.id}`, configObj)
@@ -164,19 +162,24 @@ searchButton.innerText = "Submit"
 searchBar.append(input, searchButton)
 searchBar.addEventListener("submit", (e) => {
     e.preventDefault()
-    showBookDiv.innerHTML = '';
+    // showBookDiv.innerHTML = '';
     genreContainer.innerHTML = ''
     fetchAllBooks()
         .then(books => {
-            let bookMatches = books.data.filter(book => book.attributes.title.includes(capitalize(e.target['book-title'].value.toLowerCase())) || book.attributes.author.includes(capitalize(e.target['book-title'].value.toLowerCase())))
-            if(bookMatches[0]){
-                bookContainer.innerHTML = '<h3>Search Results</h3>'
-                bookMatches.forEach(book =>{ 
-                    renderAFilteredBook(book)
-                })
+            if(e.target['book-title'].value === ""){
+                window.alert("You sent a blank search.  Please enter a book title or author.")
             } else {
-                renderErrorMessage()
+                let bookMatches = books.data.filter(book => book.attributes.title.includes(capitalize(e.target['book-title'].value.toLowerCase())) || book.attributes.author.includes(capitalize(e.target['book-title'].value.toLowerCase())))
+                if(bookMatches[0]){
+                    bookContainer.innerHTML = '<h3>Search Results</h3>'
+                    bookMatches.forEach(book =>{ 
+                        renderAFilteredBook(book)
+                    })
+                } else {
+                    renderErrorMessage()
+                }
             }
+            searchBar.reset()
         })
 })
 formContainer.append(searchBar)
@@ -246,6 +249,11 @@ function renderBookElements(book){
     return elementsArray
 }
 
+function displayReadThroughs(book, numberOfReadings){
+    return book.attributes.read_throughs === null ? numberOfReadings.innerText = `This book has been not been read!` : numberOfReadings.innerText = book.attributes.read_throughs === 1 ? `This book has been read ${book.attributes.read_throughs} time!` : `This book has been read ${book.attributes.read_throughs} times!`
+}
+
+
 // Renders the created book elements from renderBookElements with a reviews form + reviews
 function showBookDetails(book){
     featuredBooks.innerHTML = ''
@@ -253,13 +261,12 @@ function showBookDetails(book){
     showBookDiv.classList.add( 'ui', 'card')
     showBookDiv.style.textAlign = 'center'
     let numberOfReadings = document.createElement("h4")
-
-    numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs} times!`
+    displayReadThroughs(book, numberOfReadings)
     let readingButton = document.createElement("button")
     readingButton.innerText = 'I read this book!'
     readingButton.addEventListener("click",(e)=>{
         fetchUpdateReadThroughs(book).then(json =>{
-            numberOfReadings.innerText = `This book as been read ${book.attributes.read_throughs +=1} times `
+            displayReadThroughs(book, numberOfReadings)
         })
     })
 
@@ -285,7 +292,7 @@ function showBookDetails(book){
         fetchCreateReview(e.target, book).then(json => {
             book.attributes.reviews.push(json.data.attributes)
             showReviews(json.data.attributes, reviewDiv)
-            
+            reviewForm.reset()
         })
     })
     if(book.attributes.reviews.length){
@@ -322,7 +329,6 @@ function renderFeaturedBooks(){
     bookContainer.innerHTML =''
     fetchAllBooks().then(json => {
         let reviewsArray = []
-        console.log(json.data)
         json.data.forEach(book => {
             let sumStars = book.attributes.reviews.reduce((acc, review) => acc += review.stars , 0)
             let averageReviewObj= {
