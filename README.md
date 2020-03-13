@@ -2,7 +2,7 @@
 
 <h2>Read-n-Review</h2>
 
-<p>A book review app.</p>
+<p>A light-weight book review app.</p>
 
 <h3>Usage and Features</h3>
 
@@ -26,7 +26,7 @@
 
 ```
 $git clone git@github.com:elikantor/read-n-review-api.git
-$cd read-n-review
+$cd read-n-review-api
 $bundle install
 $rails db:create
 $rails db:migrate
@@ -35,11 +35,10 @@ $rails s
 ```
 
 <h5>Frontend</h5>
-<h7>Clone the frontend repo and start the frontend server</h7>
+<h7>Clone the frontend repo and open the home html file</h7>
 
 ```
 $git clone git@github.com:elikantor/read-n-review-frontend.git
 $cd read-n-review-frontend
-$npm install & npm start
-Reply "y" when asked "Would you like to run the app on another port instead?"
+$open home.html
 ```
