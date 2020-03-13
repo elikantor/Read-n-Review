@@ -11,9 +11,9 @@ logo.addEventListener('click', ()=>{
     renderFeaturedBooks()
 })
 
-let bookIndexUrl = "http://localhost:3000/books"
-let genreIndexUrl = "http://localhost:3000/genres"
-let reviewIndexUrl = "http://localhost:3000/reviews"
+let bookIndexUrl = "https://read-n-review-api.herokuapp.com/books"
+let genreIndexUrl = "https://read-n-review-api.herokuapp.com/genres"
+let reviewIndexUrl = "https://read-n-review-api.herokuapp.com/reviews"
 
 renderFeaturedBooks()
 // Fetches
