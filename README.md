@@ -28,7 +28,6 @@
 $git clone git@github.com:elikantor/read-n-review-api.git
 $cd read-n-review-api
 $bundle install
-$rails db:create
 $rails db:migrate
 $rails db:seed
 $rails s
