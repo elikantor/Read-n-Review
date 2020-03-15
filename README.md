@@ -4,7 +4,7 @@
 
 <h4> This project has been deployed <a href="https://read-n-review-frontend.herokuapp.com/">here</a>.  The <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-frontend">frontend</a> and <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-backend-API">backend</a> code are accessible in seperate repos. <h4>
 
-##Usage and Features
+## Usage and Features
 
 <p>Read-n-Review is a SPA where users can search for, create, and comment on books that they would either like to review or see the reviews of.</P>
 <li>Create a book showing the cover title, author, image, abstract, and genre through a POST request</li>
