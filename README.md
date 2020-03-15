@@ -1,8 +1,8 @@
-<h3> This project has been deployed <a href="https://read-n-review-frontend.herokuapp.com/">here</a>.  The <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-frontend">frontend</a> and <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-backend-API">backend</a> code are accessible in seperate repos. <h3>
-
 <h2>Read-n-Review</h2>
 
-<p>A light-weight book review app.</p>
+> A light-weight book review app.
+
+<h3> This project has been deployed <a href="https://read-n-review-frontend.herokuapp.com/">here</a>.  The <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-frontend">frontend</a> and <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-backend-API">backend</a> code are accessible in seperate repos. <h3>
 
 <h3>Usage and Features</h3>
 
