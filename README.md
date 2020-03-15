@@ -16,6 +16,7 @@
 <p>Backend</p>
 <li>Rails 5</li>
 <li>Fast JSON API</li>
+<li>PostgreSQL</li>
 <br></br>
 <p>Frontend</p>
 <li>Vanilla Javascript</li>
