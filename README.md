@@ -2,7 +2,7 @@
 
 > A light-weight book review app.
 
-<h4> This project has been deployed <a href="https://read-n-review-frontend.herokuapp.com/">here</a>.  The <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-frontend">frontend</a> and <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-backend-API">backend</a> code are accessible in seperate repos. <h4>
+<h4> This project has been deployed <a href="https://read-n-review-frontend.herokuapp.com/">here</a>.  The <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-frontend">frontend</a> and <a href="https://github.com/elikantor/Read-n-Review/tree/master/project-backend-API">backend</a> code are accessible in seperate repos. A demo of the app can be viewed <a href="https://www.youtube.com/watch?v=PUCrcPzO468&feature=youtu.be">here</a>.<h4>
 
 ## Usage and Features
 
